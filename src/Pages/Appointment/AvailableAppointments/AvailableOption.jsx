@@ -1,14 +1,20 @@
 import React from "react";
 
-const AvailableOption = ({ option }) => {
-  const {name,slots} = option;
+const AvailableOption = ({ option,setTreatment }) => {
+  const { name, slots,_id } = option;
+  
   return (
-    <div className="card w-96 bg-base-100 shadow-xl">
-      <div className="card-body">
-        <h2 className="card-title text-primary">{name}</h2>
-        <p>If a dog chews shoes whose shoes does he choose?</p>
-        <div className="card-actions justify-end">
-          <button className="btn btn-primary text-white">Book Appointment</button>
+    <div className="card w-96 shadow-xl">
+      <div className="card-body text-center">
+        <h2 className=" font-semibold text-2xl text-primary">{name}</h2>
+        <p>{slots.length > 0 ? slots[0] : "Try Another Day"}</p>
+        <p>
+          {slots.length} {slots.length > 1 ? "spaces" : "space"} available
+        </p>
+        <div className="card-actions justify-center">
+          <label disabled={slots.length === 0} htmlFor="booking-modal" className="btn btn-primary text-white" onClick={()=>setTreatment(option)}>
+            Book Appointment
+          </label>
         </div>
       </div>
     </div>

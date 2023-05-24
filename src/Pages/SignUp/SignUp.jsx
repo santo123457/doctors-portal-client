@@ -1,39 +1,56 @@
 import React, { useContext, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { useForm } from "react-hook-form";
 import { AuthContext } from "../../Contexts/AuthProvider/AuthProvider";
+import { toast } from "react-hot-toast";
 
-const Login = () => {
+const SignUp = () => {
   const {
     register,
-    formState: { errors },
     handleSubmit,
+    formState: { errors },
   } = useForm();
-  const [logInError, setLogInError] = useState("");
-  const { signIn } = useContext(AuthContext);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const from = location.state?.from?.pathname || "/";
-
-  const handleLogin = (data) => {
-    setLogInError("");
-    signIn(data.email, data.password)
-      .then((result) => {
+const [signUpError, setSignUpError]= useState('')
+  const {createUser,updateUser}= useContext(AuthContext)
+  const handleSignUp = (data) => {
+    console.log(data);
+    setSignUpError("")
+    createUser(data.email, data.password)
+    .then(result =>{
         const user = result.user;
-        console.log(user);
-        navigate(from, {replace : true})
-      })
-      .catch((error) => {
-        setLogInError(error.message);
-      });
+        toast.success("User Created Successfully")
+        const userInfo ={
+            displayName : data.name
+        }
+        updateUser(userInfo)
+        .then(()=>{})
+        .catch(err => console.error(err))
+        
+    })
+    .catch(error =>{setSignUpError(error.message);})
   };
   return (
     <div className="hero  bg-base-200">
       <div className="card w-96 py-10 flex-shrink-0 my-16 shadow-2xl bg-base-100">
-        <h2 className="text-2xl text-center font-semibold">Login</h2>
-        <form className="card-body" onSubmit={handleSubmit(handleLogin)}>
+        <h2 className="text-2xl text-center font-semibold">Sign Up</h2>
+        <form className="card-body" onSubmit={handleSubmit(handleSignUp)}>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Name</span>
+            </label>
+            <input
+              type="text"
+              placeholder="name"
+              className="input input-bordered"
+              {...register("name", { required: "Name is required" })}
+            />
+            {errors.name && (
+              <small className="text-red-600 pt-2">
+                {errors.name?.message}
+              </small>
+            )}
+          </div>
           <div className="form-control">
             <label className="label">
               <span className="label-text">Email</span>
@@ -42,9 +59,7 @@ const Login = () => {
               type="email"
               placeholder="email"
               className="input input-bordered"
-              {...register("email", {
-                required: "Email Address is required",
-              })}
+              {...register("email", { required: "Email Address is required" })}
             />
             {errors.email && (
               <small className="text-red-600 pt-2">
@@ -67,6 +82,11 @@ const Login = () => {
                   value: 6,
                   message: "Password must be 6 characters or longer",
                 },
+                pattern: {
+                  value: /(?=.*\d)(?=.*[a-z])(?=.*[^a-zA-Z0-9])(?!.*\s).{6,15}/,
+                  message:
+                    "min 6 characters which contain at least one numeric digit and a special character",
+                },
               })}
             />
             {errors.password && (
@@ -74,27 +94,24 @@ const Login = () => {
                 {errors.password?.message}
               </small>
             )}
-            {logInError && (
-              <small className="text-red-600 pt-2">{logInError}</small>
+            {signUpError && (
+              <small className="text-red-600 pt-2">
+                {signUpError}
+              </small>
             )}
-            <label className="label">
-              <a href="#" className="label-text-alt link link-hover">
-                Forgot password?
-              </a>
-            </label>
           </div>
           <div className="form-control mt-6">
             <input
               type="submit"
               className="btn btn-accent text-white"
-              value="Login"
+              value="Sign Up"
             />
           </div>
         </form>
-        <small className="text-center">
-          New to Doctors Portal?{" "}
-          <Link className="text-secondary ms-1 underline" to="/signup">
-            Create New Account
+        <small className="text-center ">
+          Already Have an Account?
+          <Link className="text-secondary ms-1 underline" to="/login">
+            LogIn
           </Link>
         </small>
         <div className="divider">OR</div>
@@ -107,4 +124,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;
