@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { AuthContext } from "../../Contexts/AuthProvider/AuthProvider";
+import useToken from "../../hooks/useToken";
 
 const Login = () => {
   const {
@@ -11,23 +12,38 @@ const Login = () => {
     handleSubmit,
   } = useForm();
   const [logInError, setLogInError] = useState("");
-  const { signIn } = useContext(AuthContext);
+  const { signIn, googleSignIn } = useContext(AuthContext);
+  const [loginUserEmail, setLoginUserEmail] = useState("");
+  const [token] = useToken(loginUserEmail);
   const location = useLocation();
   const navigate = useNavigate();
 
   const from = location.state?.from?.pathname || "/";
+  if (token) {
+    navigate(from, { replace: true });
+  }
 
   const handleLogin = (data) => {
     setLogInError("");
     signIn(data.email, data.password)
       .then((result) => {
         const user = result.user;
-        console.log(user);
-        navigate(from, {replace : true})
+        // console.log(user);
+        setLoginUserEmail(data.email);
       })
       .catch((error) => {
         setLogInError(error.message);
       });
+  };
+
+  const handleGoogleSignIn = () => {
+    googleSignIn()
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        navigate(from, { replace: true });
+      })
+      .catch((error) => setLogInError(error.message));
   };
   return (
     <div className="hero  bg-base-200">
@@ -98,7 +114,10 @@ const Login = () => {
           </Link>
         </small>
         <div className="divider">OR</div>
-        <button className="btn btn-outline w-4/5 mx-auto">
+        <button
+          className="btn btn-outline w-4/5 mx-auto"
+          onClick={handleGoogleSignIn}
+        >
           <FcGoogle className="text-xl me-2" />
           Continue with Google
         </button>

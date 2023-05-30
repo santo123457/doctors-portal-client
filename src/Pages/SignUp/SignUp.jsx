@@ -1,9 +1,10 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../Contexts/AuthProvider/AuthProvider";
 import { toast } from "react-hot-toast";
+import useToken from "../../hooks/useToken";
 
 const SignUp = () => {
   const {
@@ -11,25 +12,53 @@ const SignUp = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-const [signUpError, setSignUpError]= useState('')
-  const {createUser,updateUser}= useContext(AuthContext)
+  const [signUpError, setSignUpError] = useState("");
+  const { createUser, updateUser } = useContext(AuthContext);
+  const [createdUserEmail, setCreatedUserEmail] = useState("");
+  const [token] = useToken(createdUserEmail);
+  const navigate = useNavigate();
+  if (token) {
+    navigate('/')
+  }
+  
+  
   const handleSignUp = (data) => {
     console.log(data);
-    setSignUpError("")
+    setSignUpError("");
     createUser(data.email, data.password)
-    .then(result =>{
+      .then((result) => {
         const user = result.user;
-        toast.success("User Created Successfully")
-        const userInfo ={
-            displayName : data.name
-        }
+        // console.log(user);
+        toast.success("User Created Successfully");
+        const userInfo = {
+          displayName: data.name,
+        };
         updateUser(userInfo)
-        .then(()=>{})
-        .catch(err => console.error(err))
-        
-    })
-    .catch(error =>{setSignUpError(error.message);})
+          .then(() => {
+            saveUser(data.name, data.email);
+          })
+          .catch((err) => console.error(err));
+      })
+      .catch((error) => {
+        setSignUpError(error.message);
+      });
   };
+
+  const saveUser = (name, email) => {
+    const user = { name, email };
+    fetch("http://localhost:5000/users", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCreatedUserEmail(email);
+      });
+  };
+
   return (
     <div className="hero  bg-base-200">
       <div className="card w-96 py-10 flex-shrink-0 my-16 shadow-2xl bg-base-100">
@@ -95,9 +124,7 @@ const [signUpError, setSignUpError]= useState('')
               </small>
             )}
             {signUpError && (
-              <small className="text-red-600 pt-2">
-                {signUpError}
-              </small>
+              <small className="text-red-600 pt-2">{signUpError}</small>
             )}
           </div>
           <div className="form-control mt-6">
