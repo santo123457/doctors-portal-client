@@ -18,10 +18,9 @@ const SignUp = () => {
   const [token] = useToken(createdUserEmail);
   const navigate = useNavigate();
   if (token) {
-    navigate('/')
+    navigate("/");
   }
-  
-  
+
   const handleSignUp = (data) => {
     console.log(data);
     setSignUpError("");
@@ -46,7 +45,7 @@ const SignUp = () => {
 
   const saveUser = (name, email) => {
     const user = { name, email };
-    fetch("http://localhost:5000/users", {
+    fetch("https://doctors-portal-server-rho-murex.vercel.app/users", {
       method: "POST",
       headers: {
         "content-type": "application/json",

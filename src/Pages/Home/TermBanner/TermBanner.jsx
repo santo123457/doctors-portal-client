@@ -1,6 +1,7 @@
 import React from "react";
 import treatment from "../../../assets/images/treatment.png"
 import PrimaryButton from "../../../Components/PrimaryButton/PrimaryButton";
+import { Link } from "react-router-dom";
 const TermBanner = () => {
   return (
     <div className="hero mt-24">
@@ -14,7 +15,7 @@ const TermBanner = () => {
           <p className="py-6">
           It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsumis that it has a more-or-less normal distribution of letters,as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page
           </p>
-          <PrimaryButton>Get Started</PrimaryButton>
+          <Link to="/appointment"><PrimaryButton>Get Started</PrimaryButton></Link>
           
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import chair from '../../../assets/images/chair.png'
 import PrimaryButton from "../../../Components/PrimaryButton/PrimaryButton";
+import { Link } from "react-router-dom";
 const Banner = () => {
   return (
     <div className="hero py-20 bg-[url('/src/assets/images/bg.png')]">
@@ -17,7 +18,7 @@ const Banner = () => {
             excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
             a id nisi.
           </p>
-          <PrimaryButton>Get Started</PrimaryButton>
+          <Link to="/appointment"><PrimaryButton>Get Started</PrimaryButton></Link>
         </div>
       </div>
     </div>

@@ -13,10 +13,12 @@ const AddDoctor = () => {
   } = useForm();
   const navigate = useNavigate();
   const imgHostKey = import.meta.env.VITE_APP_imgbb_key;
-  const { data: specialties , isLoading } = useQuery({
+  const { data: specialties, isLoading } = useQuery({
     queryKey: ["specialty"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:5000/appointmentSpecialty");
+      const res = await fetch(
+        "https://doctors-portal-server-rho-murex.vercel.app/appointmentSpecialty"
+      );
       const data = await res.json();
       return data;
     },
@@ -25,37 +27,37 @@ const AddDoctor = () => {
     const image = data.image[0];
     const formData = new FormData();
     formData.append("image", image);
-    const url = `https://api.imgbb.com/1/upload?expiration=600&key=${imgHostKey}`;
+    const url = `https://api.imgbb.com/1/upload?key=${imgHostKey}`;
     fetch(url, {
-        method : 'POST',
-        body :formData
+      method: "POST",
+      body: formData,
     })
-    .then(res=> res.json())
-    .then(imageData =>{
+      .then((res) => res.json())
+      .then((imageData) => {
         if (imageData.success) {
-            const doctor ={
-                name : data.name,
-                email : data.email,
-                specialty : data.specialty,
-                image : imageData.data.url,
-            }
-            // save doctors information to database
-            fetch('http://localhost:5000/doctors',{
-                method : "POST",
-                headers : {
-                    "content-type" : "application/json",
-                    authorization : `bearer ${localStorage.getItem('accessToken')}`
-                },
-                body :JSON.stringify(doctor)
-            })
-            .then(res=>res.json())
-            .then(result =>{
-                console.log(result);
-                toast.success(`${data.name} is added successfully`)
-                navigate('/dashboard/managedoctors')
-            })
+          const doctor = {
+            name: data.name,
+            email: data.email,
+            specialty: data.specialty,
+            image: imageData.data.url,
+          };
+          // save doctors information to database
+          fetch("https://doctors-portal-server-rho-murex.vercel.app/doctors", {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              authorization: `bearer ${localStorage.getItem("accessToken")}`,
+            },
+            body: JSON.stringify(doctor),
+          })
+            .then((res) => res.json())
+            .then((result) => {
+              console.log(result);
+              toast.success(`${data.name} is added successfully`);
+              navigate("/dashboard/managedoctors");
+            });
         }
-    })
+      });
   };
   if (isLoading) {
     return <Loading></Loading>;

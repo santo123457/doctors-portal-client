@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 
 const BookingModal = ({ treatment, setTreatment, selectedDate, refetch }) => {
   const { user } = useContext(AuthContext);
-  const { name, slots } = treatment; //treatment is different name of option;
+  const { name, slots, price } = treatment; //treatment is different name of option;
   const date = format(selectedDate, "PP");
   const handleBooking = (event) => {
     event.preventDefault();
@@ -22,8 +22,9 @@ const BookingModal = ({ treatment, setTreatment, selectedDate, refetch }) => {
       slot,
       email,
       phone,
+      price,
     };
-    fetch("http://localhost:5000/bookings", {
+    fetch("https://doctors-portal-server-rho-murex.vercel.app/bookings", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -32,14 +33,13 @@ const BookingModal = ({ treatment, setTreatment, selectedDate, refetch }) => {
     })
       .then((res) => res.json())
       .then((data) => {
-       if(data.acknowledged){
-        setTreatment(null);
-        toast.success("Booking Confirmed Successfully");
-        refetch()
-       }
-       else{
-        toast.error(data.message)
-       }
+        if (data.acknowledged) {
+          setTreatment(null);
+          toast.success("Booking Confirmed Successfully");
+          refetch();
+        } else {
+          toast.error(data.message);
+        }
       });
 
     setTreatment(null);
